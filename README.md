@@ -1,53 +1,1148 @@
 # Jarkom-Modul-5-2026-K-36
-
-**Kelompok** : K-36  
+ 
+**Kelompok** : K-36
+ 
 **Anggota** :
-
+ 
 | Nama                    | NRP        |
 | ----------------------- | ---------- |
 | Nazwa Aulia Dwi Purnomo | 5027251018 |
 | Putri Permata Sabila    | 5027251047 |
-
+ 
+## Laporan Resmi
+ 
+### Soal 1
+ 
+Soal 1 minta pembagian prefix IP kelompok (`192.229.x.x`) pakai VLSM untuk 17 LAN dan 16 link antar-router, diurutkan dari kebutuhan terbesar, dan tiap subnet memakai prefix terkecil yang masih muat. Hasilnya berupa tabel pembagian, gambar pohon IP dengan subnet jalur Dummy-Plug ke Armisael dilingkari, dan penjelasan hitungan satu subnet.
+ 
+#### Topologi
+ 
+![](img/01-topologi.png)
+ 
+#### Cara menghitung
+ 
+- Kebutuhan tiap LAN dihitung dari jumlah host ditambah 1 IP gateway (interface router di LAN itu). Tiap link router ke router butuh 2 IP.
+- Total kebutuhan 1196 alamat, lebih dari 1024, jadi blok minimal `/21`. Blok yang dipakai `192.229.0.0/21` (2048 alamat).
+- Urutan alokasi dari yang terbesar. Kalau ukurannya sama, LAN didahulukan daripada link, lalu mengikuti urutan tabel soal.
+Contoh hitungan satu subnet, **Switch-Garden (Garden-Staff)**:
+ 
+1. Kebutuhan: 14 host + 1 gateway = 15 IP usable.
+2. Cari `2^n - 2 >= 15`. Untuk n = 4 hasilnya 14 (kurang), untuk n = 5 hasilnya 30 (cukup).
+3. Host bits = 5, jadi prefix = 32 - 5 = `/27` (netmask `255.255.255.224`).
+4. Network `192.229.4.0`, gateway `192.229.4.1`, range host `192.229.4.1 - 192.229.4.30`, broadcast `192.229.4.31`. IP terpakai 15 dan sisa 30 - 15 = 15.
+Garden-Staff jadi `/27` karena `/28` cuma punya 14 IP usable, kurang 1. Hal yang sama terjadi di Switch-Dogma dan Switch-Monolith (3 IP, jadi `/29` karena `/30` cuma muat 2).
+ 
+#### Tabel VLSM
+ 
+| No | Subnet | Network | Prefix | Gateway | Range Host | Broadcast | Terpakai | Sisa |
+| -- | ------ | ------- | ------ | ------- | ---------- | --------- | -------- | ---- |
+| 1 | Switch-Quarters (Quarters) | 192.229.0.0 | /23 | 192.229.0.1 (Rei eth1) | 192.229.0.1 - 192.229.1.254 | 192.229.1.255 | 501 | 9 |
+| 2 | Switch-Comm (Comm-Net) | 192.229.2.0 | /24 | 192.229.2.1 (Hikari eth2) | 192.229.2.1 - 192.229.2.254 | 192.229.2.255 | 201 | 53 |
+| 3 | Switch-Hangar (Hangar-Crew) | 192.229.3.0 | /25 | 192.229.3.1 (Yui eth4) | 192.229.3.1 - 192.229.3.126 | 192.229.3.127 | 101 | 25 |
+| 4 | Switch-Bunker (Sachiel) | 192.229.3.128 | /26 | 192.229.3.129 (Kensuke eth1) | 192.229.3.129 - 192.229.3.190 | 192.229.3.191 | 56 | 6 |
+| 5 | Switch-Medic (Pen-Pen, Medic-Bay) | 192.229.3.192 | /27 | 192.229.3.193 (Maya eth1) | 192.229.3.193 - 192.229.3.222 | 192.229.3.223 | 27 | 3 |
+| 6 | Switch-Relay (Relay-Node) | 192.229.3.224 | /27 | 192.229.3.225 (Kaworu eth1) | 192.229.3.225 - 192.229.3.254 | 192.229.3.255 | 26 | 4 |
+| 7 | Switch-Garden (Garden-Staff) | 192.229.4.0 | /27 | 192.229.4.1 (Shinji eth1) | 192.229.4.1 - 192.229.4.30 | 192.229.4.31 | 15 | 15 |
+| 8 | Switch-Dock (Dock-Crew) | 192.229.4.32 | /28 | 192.229.4.33 (Mari eth1) | 192.229.4.33 - 192.229.4.46 | 192.229.4.47 | 13 | 1 |
+| 9 | Switch-Lab (Entry-Plug, Dummy-Plug) | 192.229.4.48 | /29 | 192.229.4.49 (Ritsuko eth1) | 192.229.4.49 - 192.229.4.54 | 192.229.4.55 | 6 | 0 |
+| 10 | Switch-Terminal (3 MAGI) | 192.229.4.56 | /29 | 192.229.4.57 (Fuyutsuki eth1) | 192.229.4.57 - 192.229.4.62 | 192.229.4.63 | 4 | 2 |
+| 11 | Switch-Cage (Unit-01, Unit-02, Unit-00) | 192.229.4.64 | /29 | 192.229.4.65 (Misato eth1) | 192.229.4.65 - 192.229.4.70 | 192.229.4.71 | 4 | 2 |
+| 12 | Switch-Dogma (Lilith, Adam) | 192.229.4.72 | /29 | 192.229.4.73 (Toji eth1) | 192.229.4.73 - 192.229.4.78 | 192.229.4.79 | 3 | 3 |
+| 13 | Switch-Monolith (Zeruel, Armisael) | 192.229.4.80 | /29 | 192.229.4.81 (Shigeru eth2) | 192.229.4.81 - 192.229.4.86 | 192.229.4.87 | 3 | 3 |
+| 14 | Switch-Radar (Radar-Array) | 192.229.4.88 | /29 | 192.229.4.89 (Makoto eth1) | 192.229.4.89 - 192.229.4.94 | 192.229.4.95 | 5 | 1 |
+| 15 | Switch-Archive (Archive-Vault) | 192.229.4.96 | /30 | 192.229.4.97 (Asuka eth3) | 192.229.4.97 - 192.229.4.98 | 192.229.4.99 | 2 | 0 |
+| 16 | Switch-Intel (Spy) | 192.229.4.100 | /30 | 192.229.4.101 (Kaji eth1) | 192.229.4.101 - 192.229.4.102 | 192.229.4.103 | 2 | 0 |
+| 17 | Switch-Cmd (Tokyo3-Core) | 192.229.4.104 | /30 | 192.229.4.105 (Gendou eth1) | 192.229.4.105 - 192.229.4.106 | 192.229.4.107 | 2 | 0 |
+| 18 | Link Gendou-Fuyutsuki | 192.229.4.108 | /30 | 192.229.4.109 (Gendou eth2) | 192.229.4.109 - 192.229.4.110 | 192.229.4.111 | 2 | 0 |
+| 19 | Link Gendou-Shigeru | 192.229.4.112 | /30 | 192.229.4.113 (Gendou eth3) | 192.229.4.113 - 192.229.4.114 | 192.229.4.115 | 2 | 0 |
+| 20 | Link Gendou-Misato | 192.229.4.116 | /30 | 192.229.4.117 (Gendou eth4) | 192.229.4.117 - 192.229.4.118 | 192.229.4.119 | 2 | 0 |
+| 21 | Link Gendou-Kaji | 192.229.4.120 | /30 | 192.229.4.121 (Gendou eth5) | 192.229.4.121 - 192.229.4.122 | 192.229.4.123 | 2 | 0 |
+| 22 | Link Gendou-Asuka | 192.229.4.124 | /30 | 192.229.4.125 (Gendou eth6) | 192.229.4.125 - 192.229.4.126 | 192.229.4.127 | 2 | 0 |
+| 23 | Link Gendou-Hikari | 192.229.4.128 | /30 | 192.229.4.129 (Gendou eth7) | 192.229.4.129 - 192.229.4.130 | 192.229.4.131 | 2 | 0 |
+| 24 | Link Gendou-Yui | 192.229.4.132 | /30 | 192.229.4.133 (Gendou eth8) | 192.229.4.133 - 192.229.4.134 | 192.229.4.135 | 2 | 0 |
+| 25 | Link Fuyutsuki-Maya | 192.229.4.136 | /30 | 192.229.4.137 (Fuyutsuki eth2) | 192.229.4.137 - 192.229.4.138 | 192.229.4.139 | 2 | 0 |
+| 26 | Link Fuyutsuki-Toji | 192.229.4.140 | /30 | 192.229.4.141 (Fuyutsuki eth3) | 192.229.4.141 - 192.229.4.142 | 192.229.4.143 | 2 | 0 |
+| 27 | Link Shigeru-Makoto | 192.229.4.144 | /30 | 192.229.4.145 (Shigeru eth1) | 192.229.4.145 - 192.229.4.146 | 192.229.4.147 | 2 | 0 |
+| 28 | Link Asuka-Kensuke | 192.229.4.148 | /30 | 192.229.4.149 (Asuka eth1) | 192.229.4.149 - 192.229.4.150 | 192.229.4.151 | 2 | 0 |
+| 29 | Link Asuka-Ritsuko | 192.229.4.152 | /30 | 192.229.4.153 (Asuka eth2) | 192.229.4.153 - 192.229.4.154 | 192.229.4.155 | 2 | 0 |
+| 30 | Link Hikari-Kaworu | 192.229.4.156 | /30 | 192.229.4.157 (Hikari eth1) | 192.229.4.157 - 192.229.4.158 | 192.229.4.159 | 2 | 0 |
+| 31 | Link Yui-Shinji | 192.229.4.160 | /30 | 192.229.4.161 (Yui eth1) | 192.229.4.161 - 192.229.4.162 | 192.229.4.163 | 2 | 0 |
+| 32 | Link Yui-Rei | 192.229.4.164 | /30 | 192.229.4.165 (Yui eth2) | 192.229.4.165 - 192.229.4.166 | 192.229.4.167 | 2 | 0 |
+| 33 | Link Yui-Mari | 192.229.4.168 | /30 | 192.229.4.169 (Yui eth3) | 192.229.4.169 - 192.229.4.170 | 192.229.4.171 | 2 | 0 |
+ 
+Pada tiap link `/30`, IP pertama dipakai router sisi atas dan IP kedua dipakai router sisi bawah (lihat tabel link di bagian soal 2).
+ 
+#### Gambar pohon IP
+ 
+Lingkaran merah menandai subnet pada jalur Dummy-Plug ke Armisael: `Switch-Lab`, link `Asuka-Ritsuko`, link `Gendou-Asuka`, link `Gendou-Shigeru`, dan `Switch-Monolith`.
+ 
+![](img/01-pohon-ip.png)
+ 
 ---
-
-## Soal 1
-
+ 
+### Soal 2
+ 
+Soal 2 minta semua node dipasang di GNS3 sesuai topologi, tiap interface router diberi IP sesuai tabel VLSM soal 1, IP forwarding diaktifkan di semua router, dan hanya Gendou yang terhubung ke NAT1 dengan DHCP. Buktinya `ip -br a` di tiap router dan ping dua ujung tiap link.
+ 
+![](img/02-topologi-gns3.png)
+ 
+Tabel link router ke router (ujung atas dan ujung bawah):
+ 
+| Link | Network | Ujung atas | Ujung bawah |
+| ---- | ------- | ---------- | ----------- |
+| Gendou-Fuyutsuki | 192.229.4.108/30 | Gendou eth2 `192.229.4.109` | Fuyutsuki eth0 `192.229.4.110` |
+| Gendou-Shigeru | 192.229.4.112/30 | Gendou eth3 `192.229.4.113` | Shigeru eth0 `192.229.4.114` |
+| Gendou-Misato | 192.229.4.116/30 | Gendou eth4 `192.229.4.117` | Misato eth0 `192.229.4.118` |
+| Gendou-Kaji | 192.229.4.120/30 | Gendou eth5 `192.229.4.121` | Kaji eth0 `192.229.4.122` |
+| Gendou-Asuka | 192.229.4.124/30 | Gendou eth6 `192.229.4.125` | Asuka eth0 `192.229.4.126` |
+| Gendou-Hikari | 192.229.4.128/30 | Gendou eth7 `192.229.4.129` | Hikari eth0 `192.229.4.130` |
+| Gendou-Yui | 192.229.4.132/30 | Gendou eth8 `192.229.4.133` | Yui eth0 `192.229.4.134` |
+| Fuyutsuki-Maya | 192.229.4.136/30 | Fuyutsuki eth2 `192.229.4.137` | Maya eth0 `192.229.4.138` |
+| Fuyutsuki-Toji | 192.229.4.140/30 | Fuyutsuki eth3 `192.229.4.141` | Toji eth0 `192.229.4.142` |
+| Shigeru-Makoto | 192.229.4.144/30 | Shigeru eth1 `192.229.4.145` | Makoto eth0 `192.229.4.146` |
+| Asuka-Kensuke | 192.229.4.148/30 | Asuka eth1 `192.229.4.149` | Kensuke eth0 `192.229.4.150` |
+| Asuka-Ritsuko | 192.229.4.152/30 | Asuka eth2 `192.229.4.153` | Ritsuko eth0 `192.229.4.154` |
+| Hikari-Kaworu | 192.229.4.156/30 | Hikari eth1 `192.229.4.157` | Kaworu eth0 `192.229.4.158` |
+| Yui-Shinji | 192.229.4.160/30 | Yui eth1 `192.229.4.161` | Shinji eth0 `192.229.4.162` |
+| Yui-Rei | 192.229.4.164/30 | Yui eth2 `192.229.4.165` | Rei eth0 `192.229.4.166` |
+| Yui-Mari | 192.229.4.168/30 | Yui eth3 `192.229.4.169` | Mari eth0 `192.229.4.170` |
+ 
+Tiap router dikonfigurasi lewat script di `/root/<nama>.sh` (aturan praktikum), memakai `ip addr replace` supaya aman dijalankan berulang kali. Interface `eth0` Gendou ke NAT1 diatur DHCP lewat `/etc/network/interfaces` (dijelaskan di soal 4).
+ 
+#### Gendou
+ 
+```sh
+cat > /root/gendou.sh <<'EOF'
+#!/bin/bash
+ip link set eth0 up
+ip addr replace 192.229.4.105/30 dev eth1
+ip addr replace 192.229.4.109/30 dev eth2
+ip addr replace 192.229.4.113/30 dev eth3
+ip addr replace 192.229.4.117/30 dev eth4
+ip addr replace 192.229.4.121/30 dev eth5
+ip addr replace 192.229.4.125/30 dev eth6
+ip addr replace 192.229.4.129/30 dev eth7
+ip addr replace 192.229.4.133/30 dev eth8
+for i in 1 2 3 4 5 6 7 8; do ip link set eth$i up; done
+sysctl -w net.ipv4.ip_forward=1
+EOF
+bash /root/gendou.sh
+ip -br a
+```
+ 
+Ping ke ujung link tetangga: `.110 .114 .118 .122 .126 .130 .134` (awalan `192.229.4.`).
+ 
+![](img/02-ip-gendou.png)
+![](img/02-ping-gendou-1.png)
+![](img/02-ping-gendou-2.png)
+ 
+#### Fuyutsuki
+ 
+```sh
+cat > /root/fuyutsuki.sh <<'EOF'
+#!/bin/bash
+ip addr replace 192.229.4.110/30 dev eth0
+ip addr replace 192.229.4.57/29 dev eth1
+ip addr replace 192.229.4.137/30 dev eth2
+ip addr replace 192.229.4.141/30 dev eth3
+for i in 0 1 2 3; do ip link set eth$i up; done
+sysctl -w net.ipv4.ip_forward=1
+EOF
+bash /root/fuyutsuki.sh
+ip -br a
+```
+ 
+Ping ke ujung link tetangga: `.109 .138 .142` (awalan `192.229.4.`).
+ 
+![](img/02-ip-fuyutsuki.png)
+![](img/02-ping-fuyutsuki.png)
+ 
+#### Shigeru
+ 
+```sh
+cat > /root/shigeru.sh <<'EOF'
+#!/bin/bash
+ip addr replace 192.229.4.114/30 dev eth0
+ip addr replace 192.229.4.145/30 dev eth1
+ip addr replace 192.229.4.81/29 dev eth2
+for i in 0 1 2; do ip link set eth$i up; done
+sysctl -w net.ipv4.ip_forward=1
+EOF
+bash /root/shigeru.sh
+ip -br a
+```
+ 
+Ping ke ujung link tetangga: `.113 .146` (awalan `192.229.4.`).
+ 
+![](img/02-ip-shigeru.png)
+![](img/02-ping-shigeru.png)
+ 
+#### Misato
+ 
+```sh
+cat > /root/misato.sh <<'EOF'
+#!/bin/bash
+ip addr replace 192.229.4.118/30 dev eth0
+ip addr replace 192.229.4.65/29 dev eth1
+for i in 0 1; do ip link set eth$i up; done
+sysctl -w net.ipv4.ip_forward=1
+EOF
+bash /root/misato.sh
+ip -br a
+```
+ 
+Ping ke ujung link tetangga: `.117` (awalan `192.229.4.`).
+ 
+![](img/02-ip-misato.png)
+![](img/02-ping-misato.png)
+ 
+#### Kaji
+ 
+```sh
+cat > /root/kaji.sh <<'EOF'
+#!/bin/bash
+ip addr replace 192.229.4.122/30 dev eth0
+ip addr replace 192.229.4.101/30 dev eth1
+for i in 0 1; do ip link set eth$i up; done
+sysctl -w net.ipv4.ip_forward=1
+EOF
+bash /root/kaji.sh
+ip -br a
+```
+ 
+Ping ke ujung link tetangga: `.121` (awalan `192.229.4.`).
+ 
+![](img/02-ip-kaji.png)
+![](img/02-ping-kaji.png)
+ 
+#### Asuka
+ 
+```sh
+cat > /root/asuka.sh <<'EOF'
+#!/bin/bash
+ip addr replace 192.229.4.126/30 dev eth0
+ip addr replace 192.229.4.149/30 dev eth1
+ip addr replace 192.229.4.153/30 dev eth2
+ip addr replace 192.229.4.97/30 dev eth3
+for i in 0 1 2 3; do ip link set eth$i up; done
+sysctl -w net.ipv4.ip_forward=1
+EOF
+bash /root/asuka.sh
+ip -br a
+```
+ 
+Ping ke ujung link tetangga: `.125 .150 .154` (awalan `192.229.4.`).
+ 
+![](img/02-ip-asuka.png)
+![](img/02-ping-asuka.png)
+ 
+#### Hikari
+ 
+```sh
+cat > /root/hikari.sh <<'EOF'
+#!/bin/bash
+ip addr replace 192.229.4.130/30 dev eth0
+ip addr replace 192.229.4.157/30 dev eth1
+ip addr replace 192.229.2.1/24 dev eth2
+for i in 0 1 2; do ip link set eth$i up; done
+sysctl -w net.ipv4.ip_forward=1
+EOF
+bash /root/hikari.sh
+ip -br a
+```
+ 
+Ping ke ujung link tetangga: `.129 .158` (awalan `192.229.4.`).
+ 
+![](img/02-ip-hikari.png)
+![](img/02-ping-hikari.png)
+ 
+#### Yui
+ 
+```sh
+cat > /root/yui.sh <<'EOF'
+#!/bin/bash
+ip addr replace 192.229.4.134/30 dev eth0
+ip addr replace 192.229.4.161/30 dev eth1
+ip addr replace 192.229.4.165/30 dev eth2
+ip addr replace 192.229.4.169/30 dev eth3
+ip addr replace 192.229.3.1/25 dev eth4
+for i in 0 1 2 3 4; do ip link set eth$i up; done
+sysctl -w net.ipv4.ip_forward=1
+EOF
+bash /root/yui.sh
+ip -br a
+```
+ 
+Ping ke ujung link tetangga: `.133 .162 .166 .170` (awalan `192.229.4.`).
+ 
+![](img/02-ip-yui.png)
+![](img/02-ping-yui-1.png)
+![](img/02-ping-yui-2.png)
+ 
+#### Maya
+ 
+```sh
+cat > /root/maya.sh <<'EOF'
+#!/bin/bash
+ip addr replace 192.229.4.138/30 dev eth0
+ip addr replace 192.229.3.193/27 dev eth1
+for i in 0 1; do ip link set eth$i up; done
+sysctl -w net.ipv4.ip_forward=1
+EOF
+bash /root/maya.sh
+ip -br a
+```
+ 
+Ping ke ujung link tetangga: `.137` (awalan `192.229.4.`).
+ 
+![](img/02-ip-maya.png)
+![](img/02-ping-maya.png)
+ 
+#### Toji
+ 
+```sh
+cat > /root/toji.sh <<'EOF'
+#!/bin/bash
+ip addr replace 192.229.4.142/30 dev eth0
+ip addr replace 192.229.4.73/29 dev eth1
+for i in 0 1; do ip link set eth$i up; done
+sysctl -w net.ipv4.ip_forward=1
+EOF
+bash /root/toji.sh
+ip -br a
+```
+ 
+Ping ke ujung link tetangga: `.141` (awalan `192.229.4.`).
+ 
+![](img/02-ip-toji.png)
+![](img/02-ping-toji.png)
+ 
+#### Makoto
+ 
+```sh
+cat > /root/makoto.sh <<'EOF'
+#!/bin/bash
+ip addr replace 192.229.4.146/30 dev eth0
+ip addr replace 192.229.4.89/29 dev eth1
+for i in 0 1; do ip link set eth$i up; done
+sysctl -w net.ipv4.ip_forward=1
+EOF
+bash /root/makoto.sh
+ip -br a
+```
+ 
+Ping ke ujung link tetangga: `.145` (awalan `192.229.4.`).
+ 
+![](img/02-ip-makoto.png)
+![](img/02-ping-makoto.png)
+ 
+#### Kensuke
+ 
+```sh
+cat > /root/kensuke.sh <<'EOF'
+#!/bin/bash
+ip addr replace 192.229.4.150/30 dev eth0
+ip addr replace 192.229.3.129/26 dev eth1
+for i in 0 1; do ip link set eth$i up; done
+sysctl -w net.ipv4.ip_forward=1
+EOF
+bash /root/kensuke.sh
+ip -br a
+```
+ 
+Ping ke ujung link tetangga: `.149` (awalan `192.229.4.`).
+ 
+![](img/02-ip-kensuke.png)
+![](img/02-ping-kensuke.png)
+ 
+#### Ritsuko
+ 
+```sh
+cat > /root/ritsuko.sh <<'EOF'
+#!/bin/bash
+ip addr replace 192.229.4.154/30 dev eth0
+ip addr replace 192.229.4.49/29 dev eth1
+for i in 0 1; do ip link set eth$i up; done
+sysctl -w net.ipv4.ip_forward=1
+EOF
+bash /root/ritsuko.sh
+ip -br a
+```
+ 
+Ping ke ujung link tetangga: `.153` (awalan `192.229.4.`).
+ 
+![](img/02-ip-ritsuko.png)
+![](img/02-ping-ritsuko.png)
+ 
+#### Kaworu
+ 
+```sh
+cat > /root/kaworu.sh <<'EOF'
+#!/bin/bash
+ip addr replace 192.229.4.158/30 dev eth0
+ip addr replace 192.229.3.225/27 dev eth1
+for i in 0 1; do ip link set eth$i up; done
+sysctl -w net.ipv4.ip_forward=1
+EOF
+bash /root/kaworu.sh
+ip -br a
+```
+ 
+Ping ke ujung link tetangga: `.157` (awalan `192.229.4.`).
+ 
+![](img/02-ip-kaworu.png)
+![](img/02-ping-kaworu.png)
+ 
+#### Shinji
+ 
+```sh
+cat > /root/shinji.sh <<'EOF'
+#!/bin/bash
+ip addr replace 192.229.4.162/30 dev eth0
+ip addr replace 192.229.4.1/27 dev eth1
+for i in 0 1; do ip link set eth$i up; done
+sysctl -w net.ipv4.ip_forward=1
+EOF
+bash /root/shinji.sh
+ip -br a
+```
+ 
+Ping ke ujung link tetangga: `.161` (awalan `192.229.4.`).
+ 
+![](img/02-ip-shinji.png)
+![](img/02-ping-shinji.png)
+ 
+#### Rei
+ 
+```sh
+cat > /root/rei.sh <<'EOF'
+#!/bin/bash
+ip addr replace 192.229.4.166/30 dev eth0
+ip addr replace 192.229.0.1/23 dev eth1
+for i in 0 1; do ip link set eth$i up; done
+sysctl -w net.ipv4.ip_forward=1
+EOF
+bash /root/rei.sh
+ip -br a
+```
+ 
+Ping ke ujung link tetangga: `.165` (awalan `192.229.4.`).
+ 
+![](img/02-ip-rei.png)
+![](img/02-ping-rei.png)
+ 
+#### Mari
+ 
+```sh
+cat > /root/mari.sh <<'EOF'
+#!/bin/bash
+ip addr replace 192.229.4.170/30 dev eth0
+ip addr replace 192.229.4.33/28 dev eth1
+for i in 0 1; do ip link set eth$i up; done
+sysctl -w net.ipv4.ip_forward=1
+EOF
+bash /root/mari.sh
+ip -br a
+```
+ 
+Ping ke ujung link tetangga: `.169` (awalan `192.229.4.`).
+ 
+![](img/02-ip-mari.png)
+![](img/02-ping-mari.png)
+ 
 ---
-
-## Soal 2
-
+ 
+### Soal 3
+ 
+Soal 3 minta semua subnet dihubungkan dengan routing statis dengan jumlah rute sesedikit mungkin. Router selain Gendou cukup punya satu default route ke atas dan rute untuk subnet di bawahnya. Gendou memakai default route ke NAT1. Subnet satu cabang yang bisa digabung tepat menjadi satu CIDR harus diringkas.
+ 
+Peringkasan dilakukan per cabang di bawah Gendou. Dua subnet bisa digabung tepat kalau berurutan dan sejajar dalam satu blok yang lebih besar, tanpa mencakup alamat milik cabang lain.
+ 
+| Cabang | Subnet yang digabung | Hasil |
+| ------ | -------------------- | ----- |
+| Fuyutsuki | `192.229.4.136/30` + `192.229.4.140/30` (link Maya dan link Toji) | `192.229.4.136/29` |
+| Shigeru | `192.229.4.80/29` + `192.229.4.88/29` (Monolith dan Radar) | `192.229.4.80/28` |
+| Yui | `192.229.4.160/30` + `192.229.4.164/30` (link Shinji dan link Rei) | `192.229.4.160/29` |
+ 
+Cabang Asuka, Hikari, Misato, dan Kaji tidak ada yang bisa digabung tepat. Contohnya `4.148/30` dan `4.152/30` di Asuka bukan pasangan sejajar dalam satu blok `/29`, jadi kalau dipaksa digabung akan ikut mencakup alamat milik cabang lain.
+ 
+Default route ke atas dan rute ke bawah per router:
+ 
+| Router | Default via | Rute ke bawah |
+| ------ | ----------- | ------------- |
+| Gendou | NAT1 (dari DHCP) | 22 rute, lihat script di bawah |
+| Fuyutsuki | 192.229.4.109 | `3.192/27` via `4.138`, `4.72/29` via `4.142` |
+| Shigeru | 192.229.4.113 | `4.88/29` via `4.146` |
+| Asuka | 192.229.4.125 | `3.128/26` via `4.150`, `4.48/29` via `4.154` |
+| Hikari | 192.229.4.129 | `3.224/27` via `4.158` |
+| Yui | 192.229.4.133 | `4.0/27` via `4.162`, `0.0/23` via `4.166`, `4.32/28` via `4.170` |
+ 
+Router ujung (Maya, Toji, Makoto, Kensuke, Ritsuko, Kaworu, Shinji, Rei, Mari, Misato, Kaji) hanya butuh default route ke router di atasnya, yaitu `192.229.4.137`, `.141`, `.145`, `.149`, `.153`, `.157`, `.161`, `.165`, `.169`, `.117`, dan `.121`.
+ 
+Script rute disimpan di `/root/<nama>-route.sh` dan dipasang ke `.bashrc` supaya jalan lagi setelah node dibuka ulang. Contoh Gendou:
+ 
+```sh
+cat > /root/gendou-route.sh <<'EOF'
+#!/bin/bash
+ip route replace 192.229.4.56/29 via 192.229.4.110
+ip route replace 192.229.4.72/29 via 192.229.4.110
+ip route replace 192.229.4.136/29 via 192.229.4.110
+ip route replace 192.229.3.192/27 via 192.229.4.110
+ip route replace 192.229.4.80/28 via 192.229.4.114
+ip route replace 192.229.4.144/30 via 192.229.4.114
+ip route replace 192.229.4.64/29 via 192.229.4.118
+ip route replace 192.229.4.100/30 via 192.229.4.122
+ip route replace 192.229.4.96/30 via 192.229.4.126
+ip route replace 192.229.4.148/30 via 192.229.4.126
+ip route replace 192.229.4.152/30 via 192.229.4.126
+ip route replace 192.229.3.128/26 via 192.229.4.126
+ip route replace 192.229.4.48/29 via 192.229.4.126
+ip route replace 192.229.2.0/24 via 192.229.4.130
+ip route replace 192.229.4.156/30 via 192.229.4.130
+ip route replace 192.229.3.224/27 via 192.229.4.130
+ip route replace 192.229.3.0/25 via 192.229.4.134
+ip route replace 192.229.4.0/27 via 192.229.4.134
+ip route replace 192.229.4.32/28 via 192.229.4.134
+ip route replace 192.229.0.0/23 via 192.229.4.134
+ip route replace 192.229.4.160/29 via 192.229.4.134
+ip route replace 192.229.4.168/30 via 192.229.4.134
+EOF
+bash /root/gendou-route.sh
+grep -q gendou-route /root/.bashrc || echo 'bash /root/gendou-route.sh' >> /root/.bashrc
+ip route
+```
+ 
+Router lain dengan rute ke bawah:
+ 
+```sh
+cat > /root/fuyutsuki-route.sh <<'EOF'
+#!/bin/bash
+ip route replace default via 192.229.4.109
+ip route replace 192.229.3.192/27 via 192.229.4.138
+ip route replace 192.229.4.72/29 via 192.229.4.142
+EOF
+ 
+cat > /root/shigeru-route.sh <<'EOF'
+#!/bin/bash
+ip route replace default via 192.229.4.113
+ip route replace 192.229.4.88/29 via 192.229.4.146
+EOF
+ 
+cat > /root/asuka-route.sh <<'EOF'
+#!/bin/bash
+ip route replace default via 192.229.4.125
+ip route replace 192.229.3.128/26 via 192.229.4.150
+ip route replace 192.229.4.48/29 via 192.229.4.154
+EOF
+ 
+cat > /root/hikari-route.sh <<'EOF'
+#!/bin/bash
+ip route replace default via 192.229.4.129
+ip route replace 192.229.3.224/27 via 192.229.4.158
+EOF
+ 
+cat > /root/yui-route.sh <<'EOF'
+#!/bin/bash
+ip route replace default via 192.229.4.133
+ip route replace 192.229.4.0/27 via 192.229.4.162
+ip route replace 192.229.0.0/23 via 192.229.4.166
+ip route replace 192.229.4.32/28 via 192.229.4.170
+EOF
+```
+ 
+Router ujung, contoh Toji:
+ 
+```sh
+echo 'ip route replace default via 192.229.4.141' > /root/toji-route.sh
+bash /root/toji-route.sh
+grep -q toji-route /root/.bashrc || echo 'bash /root/toji-route.sh' >> /root/.bashrc
+ip route
+```
+ 
+Untuk pembuktian, node uji diberi IP dan gateway sementara lewat `/root/uji_3_5.sh` (IP permanen dibuat di soal 6). Contoh Armisael:
+ 
+```sh
+cat > /root/uji_3_5.sh <<'EOF'
+#!/bin/bash
+ip link set eth0 up
+ip addr replace 192.229.4.86/29 dev eth0
+ip route replace default via 192.229.4.81
+EOF
+bash /root/uji_3_5.sh
+ip -br a
+```
+ 
+| Node uji | IP sementara | Gateway |
+| -------- | ------------ | ------- |
+| Armisael | 192.229.4.86/29 | 192.229.4.81 |
+| Lilith | 192.229.4.78/29 | 192.229.4.73 |
+| Sachiel | 192.229.3.190/26 | 192.229.3.129 |
+| Comm-Net | 192.229.2.254/24 | 192.229.2.1 |
+ 
+Pembuktian dari Armisael ke Lilith, Sachiel, dan Comm-Net:
+ 
+```sh
+ping -c 3 192.229.4.78
+ping -c 3 192.229.3.190
+ping -c 3 192.229.2.254
+```
+ 
+#### Output
+ 
+![](img/03-ping-armisael.png)
+<!-- TODO: tambahkan screenshot ping Armisael ke Sachiel (192.229.3.190) dan Comm-Net (192.229.2.254), karena screenshot di catatan baru berisi ping ke Lilith -->
+ 
 ---
-
-## Soal 3
-
+ 
+### Soal 4
+ 
+Soal 4 minta seluruh jaringan punya akses internet lewat Gendou, tanpa konfigurasi yang perlu diubah kalau IP NAT1 berganti. Hanya traffic dari prefix internal yang keluar lewat NAT1 yang boleh diterjemahkan alamatnya, sedangkan traffic antar-LAN harus tetap membawa alamat asli pengirimnya. Node yang nanti memasang paket juga harus bisa me-resolve nama domain.
+ 
+Penjelasan konfigurasi di `/root/gendou-nat.sh`:
+ 
+- Dipakai `MASQUERADE`, bukan `SNAT --to-source <IP>`, karena MASQUERADE otomatis memakai IP `eth0` yang sedang aktif. Jadi konfigurasi tidak perlu diubah saat IP NAT1 berganti.
+- `-s 192.229.0.0/21` membatasi hanya traffic dari prefix internal yang diterjemahkan.
+- `-o eth0` membatasi hanya traffic yang keluar lewat NAT1. Traffic antar-LAN tidak lewat `eth0`, jadi alamat pengirim aslinya tetap.
+- Pola `-C ... || -A ...` artinya cek dulu, tambahkan hanya kalau belum ada, jadi script aman dijalankan berulang kali tanpa rule dobel.
+- `nameserver 8.8.8.8` di `/etc/resolv.conf` supaya nama domain bisa di-resolve.
+```sh
+cat > /root/gendou-nat.sh <<'EOF'
+#!/bin/bash
+iptables -t nat -C POSTROUTING -s 192.229.0.0/21 -o eth0 -j MASQUERADE 2>/dev/null || iptables -t nat -A POSTROUTING -s 192.229.0.0/21 -o eth0 -j MASQUERADE
+echo "nameserver 8.8.8.8" > /etc/resolv.conf
+EOF
+```
+ 
+Image Gendou belum punya klien DHCP, jadi `ifupdown`, `isc-dhcp-client`, dan `iptables` dipasang dulu (dengan IP sementara hanya untuk instalasi). Lalu `eth0` diatur DHCP lewat `/etc/network/interfaces`:
+ 
+```sh
+apt update && apt install -y ifupdown isc-dhcp-client iptables
+ 
+cat > /etc/network/interfaces <<'EOF'
+auto lo
+iface lo inet loopback
+ 
+auto eth0
+iface eth0 inet dhcp
+EOF
+ip addr flush dev eth0
+ifup eth0
+```
+ 
+Setelah node lain mendapat DNS, pembuktian dari Armisael dan Lilith:
+ 
+```sh
+ping -c 3 8.8.8.8
+ping -c 3 deb.debian.org
+iptables -t nat -L POSTROUTING -n -v
+```
+ 
+#### Output
+ 
+![](img/04-ping-armisael-8888.png)
+![](img/04-ping-lilith-8888.png)
+<!-- TODO: tambahkan screenshot ping deb.debian.org dari Armisael dan Lilith, serta iptables -t nat -L POSTROUTING -n -v di Gendou (counter MASQUERADE) -->
+ 
 ---
-
-## Soal 4
-
+ 
+### Soal 5
+ 
+Soal 5 minta Gendou dikunci, boleh keluar tapi tidak boleh dimasuki dari sisi NAT1. Policy `INPUT` dan `FORWARD` diubah menjadi `DROP`, lalu diizinkan empat hal: (a) balasan koneksi yang sudah ada, (b) traffic dari jaringan internal ke internet, (c) traffic antar-LAN, dan (d) traffic dari jaringan internal ke Gendou sendiri. Loopback dan DHCP dari NAT1 juga harus tetap jalan. Soal 2 sampai 4 harus tetap jalan, dan semuanya ditulis di `gendou.sh`.
+ 
+Karena semuanya harus ada di `gendou.sh`, isi script soal 2, 3, dan 4 digabung ke satu file ini. Rule `ACCEPT` dipasang dulu dan policy `DROP` diubah paling akhir supaya tidak ada jeda saat semua lalu lintas terblokir. Hanya tabel `filter` yang di-flush, tabel `nat` dari soal 4 tidak disentuh.
+ 
+```sh
+cat > /root/gendou.sh <<'EOF'
+#!/bin/bash
+INT=192.229.0.0/21
+ 
+# Soal 2: IP interface dan forwarding
+ip link set eth0 up
+ip addr replace 192.229.4.105/30 dev eth1
+ip addr replace 192.229.4.109/30 dev eth2
+ip addr replace 192.229.4.113/30 dev eth3
+ip addr replace 192.229.4.117/30 dev eth4
+ip addr replace 192.229.4.121/30 dev eth5
+ip addr replace 192.229.4.125/30 dev eth6
+ip addr replace 192.229.4.129/30 dev eth7
+ip addr replace 192.229.4.133/30 dev eth8
+for i in 1 2 3 4 5 6 7 8; do ip link set eth$i up; done
+sysctl -w net.ipv4.ip_forward=1
+ 
+# Soal 3: static routing
+ip route replace 192.229.4.56/29 via 192.229.4.110
+ip route replace 192.229.4.72/29 via 192.229.4.110
+ip route replace 192.229.4.136/29 via 192.229.4.110
+ip route replace 192.229.3.192/27 via 192.229.4.110
+ip route replace 192.229.4.80/28 via 192.229.4.114
+ip route replace 192.229.4.144/30 via 192.229.4.114
+ip route replace 192.229.4.64/29 via 192.229.4.118
+ip route replace 192.229.4.100/30 via 192.229.4.122
+ip route replace 192.229.4.96/30 via 192.229.4.126
+ip route replace 192.229.4.148/30 via 192.229.4.126
+ip route replace 192.229.4.152/30 via 192.229.4.126
+ip route replace 192.229.3.128/26 via 192.229.4.126
+ip route replace 192.229.4.48/29 via 192.229.4.126
+ip route replace 192.229.2.0/24 via 192.229.4.130
+ip route replace 192.229.4.156/30 via 192.229.4.130
+ip route replace 192.229.3.224/27 via 192.229.4.130
+ip route replace 192.229.3.0/25 via 192.229.4.134
+ip route replace 192.229.4.0/27 via 192.229.4.134
+ip route replace 192.229.4.32/28 via 192.229.4.134
+ip route replace 192.229.0.0/23 via 192.229.4.134
+ip route replace 192.229.4.160/29 via 192.229.4.134
+ip route replace 192.229.4.168/30 via 192.229.4.134
+ 
+# Soal 4: NAT dan DNS
+iptables -t nat -C POSTROUTING -s $INT -o eth0 -j MASQUERADE 2>/dev/null || iptables -t nat -A POSTROUTING -s $INT -o eth0 -j MASQUERADE
+echo "nameserver 8.8.8.8" > /etc/resolv.conf
+ 
+# Soal 5: firewall (tabel filter saja, tabel nat tidak disentuh)
+iptables -F INPUT
+iptables -F FORWARD
+# INPUT: loopback, balasan, DHCP dari NAT1, internal ke Gendou
+iptables -A INPUT -i lo -j ACCEPT
+iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+iptables -A INPUT -i eth0 -p udp --sport 67 --dport 68 -j ACCEPT
+iptables -A INPUT -s $INT ! -i eth0 -j ACCEPT
+# FORWARD: balasan, internal ke internet, antar-LAN
+iptables -A FORWARD -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+iptables -A FORWARD -s $INT ! -i eth0 -o eth0 -j ACCEPT
+iptables -A FORWARD -s $INT -d $INT ! -i eth0 -j ACCEPT
+# Policy terakhir
+iptables -P INPUT DROP
+iptables -P FORWARD DROP
+EOF
+sed -i '/gendou/d' /root/.bashrc
+echo 'bash /root/gendou.sh' >> /root/.bashrc
+bash /root/gendou.sh
+iptables -S
+iptables -t nat -S
+ip route | grep -c via
+```
+ 
+| Rule | Menjawab |
+| ---- | -------- |
+| `INPUT` dan `FORWARD` dengan `--ctstate ESTABLISHED,RELATED` | (a) balasan koneksi yang sudah ada |
+| `FORWARD -s $INT ! -i eth0 -o eth0` | (b) internal ke internet |
+| `FORWARD -s $INT -d $INT ! -i eth0` | (c) antar-LAN |
+| `INPUT -s $INT ! -i eth0` | (d) internal ke Gendou sendiri |
+| `INPUT -i lo` | loopback |
+| `INPUT -i eth0 -p udp --sport 67 --dport 68` | DHCP dari NAT1 |
+ 
+Bagian `! -i eth0` memastikan paket yang masuk dari sisi NAT1 tidak bisa lolos dengan memalsukan alamat sumber internal. Koneksi baru dari NAT1 tidak cocok dengan rule mana pun, jadi jatuh ke policy `DROP`.
+ 
+#### Output
+ 
+![](img/05-iptables-gendou.png)
+![](img/05-ping-armisael.png)
+ 
 ---
-
-## Soal 5
-
+ 
+### Soal 6
+ 
+Soal 6 minta IP statis dan gateway untuk semua node non-router sesuai aturan alamat di glosarium, dan disimpan supaya bertahan setelah restart. Aturannya, gateway adalah IP usable pertama subnet, lalu node di switch diberi IP usable berikutnya sesuai urutan nama node pada switch di gambar topologi (kiri ke kanan).
+ 
+Contoh di Switch-Cage (`192.229.4.64/29`): gateway Misato `.65`, lalu Unit-01 `.66`, Unit-02 `.67`, dan Unit-00 `.68`.
+ 
+| Node | IP/prefix | Gateway |
+| ---- | --------- | ------- |
+| Quarters | 192.229.0.2/23 | 192.229.0.1 |
+| Comm-Net | 192.229.2.2/24 | 192.229.2.1 |
+| Hangar-Crew | 192.229.3.2/25 | 192.229.3.1 |
+| Sachiel | 192.229.3.130/26 | 192.229.3.129 |
+| Pen-Pen | 192.229.3.194/27 | 192.229.3.193 |
+| Medic-Bay | 192.229.3.195/27 | 192.229.3.193 |
+| Relay-Node | 192.229.3.226/27 | 192.229.3.225 |
+| Garden-Staff | 192.229.4.2/27 | 192.229.4.1 |
+| Dock-Crew | 192.229.4.34/28 | 192.229.4.33 |
+| Entry-Plug | 192.229.4.50/29 | 192.229.4.49 |
+| Dummy-Plug | 192.229.4.51/29 | 192.229.4.49 |
+| Magi-Casper | 192.229.4.58/29 | 192.229.4.57 |
+| Magi-Balthasar | 192.229.4.59/29 | 192.229.4.57 |
+| Magi-Melchior | 192.229.4.60/29 | 192.229.4.57 |
+| Unit-01 | 192.229.4.66/29 | 192.229.4.65 |
+| Unit-02 | 192.229.4.67/29 | 192.229.4.65 |
+| Unit-00 | 192.229.4.68/29 | 192.229.4.65 |
+| Lilith | 192.229.4.74/29 | 192.229.4.73 |
+| Adam | 192.229.4.75/29 | 192.229.4.73 |
+| Zeruel | 192.229.4.82/29 | 192.229.4.81 |
+| Armisael | 192.229.4.83/29 | 192.229.4.81 |
+| Radar-Array | 192.229.4.90/29 | 192.229.4.89 |
+| Archive-Vault | 192.229.4.98/30 | 192.229.4.97 |
+| Spy | 192.229.4.102/30 | 192.229.4.101 |
+| Tokyo3-Core | 192.229.4.106/30 | 192.229.4.105 |
+ 
+Script `/root/ip.sh` menulis konfigurasi ke `/etc/network/interfaces` supaya tersimpan, lalu langsung memasang IP dan default route dengan perintah `ip` supaya aktif tanpa menunggu restart. Contoh Unit-01, node lain tinggal menyesuaikan `address`, `netmask`, dan gateway sesuai tabel:
+ 
+```sh
+cat > /root/ip.sh <<'EOF'
+#!/bin/bash
+# Simpan konfigurasi supaya persisten
+cat > /etc/network/interfaces <<EOT
+auto lo
+iface lo inet loopback
+ 
+auto eth0
+iface eth0 inet static
+    address 192.229.4.66
+    netmask 255.255.255.248
+    gateway 192.229.4.65
+EOT
+ 
+# Terapkan langsung tanpa menunggu restart
+ip link set eth0 up
+ip addr flush dev eth0
+ip addr add 192.229.4.66/29 dev eth0
+ip route replace default via 192.229.4.65
+EOF
+bash /root/ip.sh
+cat /etc/network/interfaces
+ip -br a
+ip route
+ping -c 3 192.229.4.65
+```
+ 
+Netmask mengikuti prefix:
+ 
+| Prefix | Netmask |
+| ------ | ------- |
+| /23 | 255.255.254.0 |
+| /24 | 255.255.255.0 |
+| /25 | 255.255.255.128 |
+| /26 | 255.255.255.192 |
+| /27 | 255.255.255.224 |
+| /28 | 255.255.255.240 |
+| /29 | 255.255.255.248 |
+| /30 | 255.255.255.252 |
+ 
+Untuk pembuktian dari Unit-01 dipakai script `/root/test_ping.sh` yang mem-ping 17 gateway subnet, 24 node lain, dan internet (total 43 target) lalu menampilkan ringkasan `OK` dan `GAGAL`.
+ 
+```sh
+cat > /root/test_ping.sh <<'EOF'
+#!/bin/bash
+OK=0
+GAGAL=0
+cek() {
+  if ping -c 1 -W 2 "$2" > /dev/null 2>&1
+  then
+    echo "OK    $1 $2"
+    OK=$((OK+1))
+  else
+    echo "GAGAL $1 $2"
+    GAGAL=$((GAGAL+1))
+  fi
+}
+ 
+echo "== Gateway tiap subnet (IP router di LAN) =="
+cek GW-Quarters 192.229.0.1
+cek GW-Comm 192.229.2.1
+cek GW-Hangar 192.229.3.1
+cek GW-Bunker 192.229.3.129
+cek GW-Medic 192.229.3.193
+cek GW-Relay 192.229.3.225
+cek GW-Garden 192.229.4.1
+cek GW-Dock 192.229.4.33
+cek GW-Lab 192.229.4.49
+cek GW-Terminal 192.229.4.57
+cek GW-Cage 192.229.4.65
+cek GW-Dogma 192.229.4.73
+cek GW-Monolith 192.229.4.81
+cek GW-Radar 192.229.4.89
+cek GW-Archive 192.229.4.97
+cek GW-Intel 192.229.4.101
+cek GW-Cmd 192.229.4.105
+echo "== Node di subnet lain =="
+cek Quarters 192.229.0.2
+cek Comm-Net 192.229.2.2
+cek Hangar-Crew 192.229.3.2
+cek Sachiel 192.229.3.130
+cek Pen-Pen 192.229.3.194
+cek Medic-Bay 192.229.3.195
+cek Relay-Node 192.229.3.226
+cek Garden-Staff 192.229.4.2
+cek Dock-Crew 192.229.4.34
+cek Entry-Plug 192.229.4.50
+cek Dummy-Plug 192.229.4.51
+cek Magi-Casper 192.229.4.58
+cek Magi-Balthasar 192.229.4.59
+cek Magi-Melchior 192.229.4.60
+cek Unit-02 192.229.4.67
+cek Unit-00 192.229.4.68
+cek Lilith 192.229.4.74
+cek Adam 192.229.4.75
+cek Zeruel 192.229.4.82
+cek Armisael 192.229.4.83
+cek Radar-Array 192.229.4.90
+cek Archive-Vault 192.229.4.98
+cek Spy 192.229.4.102
+cek Tokyo3-Core 192.229.4.106
+echo "== Internet =="
+cek Seele 8.8.8.8
+cek deb.debian.org deb.debian.org
+echo "================================"
+echo "OK=$OK GAGAL=$GAGAL"
+EOF
+bash /root/test_ping.sh
+```
+ 
+#### Output
+ 
+<!-- TODO: tambahkan screenshot ip -br a dan ping -c 3 192.229.4.65 di Unit-01 (bukti wajib soal 6), dan ip -br a Unit-01 setelah stop lalu start node (bukti persisten) -->
+![](img/06-test-ping-unit01.png)
+ 
 ---
-
-## Soal 6
-
+ 
+### Soal 7
+ 
+Soal 7 minta tiga MAGI di Switch-Terminal dibangunkan. `iptables` dan `netcat-traditional` dipasang lewat `/root/<nama>.sh`, lalu listener `nc` dinyalakan sesuai port di glosarium: Casper 5000, Balthasar 5000 dan 5001, Melchior 5000. Dari Lilith dikirim pesan ke ketiganya dan ke port 5001 Balthasar, lalu pesan yang diterima ditampilkan di tiap node.
+ 
+Penjelasan script:
+ 
+- Paket dipasang hanya kalau belum ada, jadi script aman dijalankan ulang.
+- Listener dibungkus loop `while true` supaya hidup lagi setelah satu koneksi selesai. Tanpa loop, `nc` berhenti setelah pesan pertama.
+- Pesan yang masuk disimpan ke `/root/pesan-<port>.log` supaya mudah ditampilkan sebagai bukti.
+- Pengecekan `pgrep` mencegah listener dobel kalau script dijalankan lagi.
+#### Magi-Casper
+ 
+```sh
+cat > /root/casper.sh <<'EOF'
+#!/bin/bash
+echo "nameserver 8.8.8.8" > /etc/resolv.conf
+if ! command -v nc.traditional > /dev/null 2>&1 || ! command -v iptables > /dev/null 2>&1
+then
+  apt-get update && apt-get install -y iptables netcat-traditional
+fi
+update-alternatives --set nc /bin/nc.traditional 2>/dev/null
+for port in 5000
+do
+  pgrep -f "nc -l -p $port" > /dev/null || (while true; do nc -l -p $port >> /root/pesan-$port.log; done &)
+done
+EOF
+bash /root/casper.sh
+grep -q casper.sh /root/.bashrc || echo 'bash /root/casper.sh' >> /root/.bashrc
+```
+ 
+#### Magi-Balthasar
+ 
+```sh
+cat > /root/balthasar.sh <<'EOF'
+#!/bin/bash
+echo "nameserver 8.8.8.8" > /etc/resolv.conf
+if ! command -v nc.traditional > /dev/null 2>&1 || ! command -v iptables > /dev/null 2>&1
+then
+  apt-get update && apt-get install -y iptables netcat-traditional
+fi
+update-alternatives --set nc /bin/nc.traditional 2>/dev/null
+for port in 5000 5001
+do
+  pgrep -f "nc -l -p $port" > /dev/null || (while true; do nc -l -p $port >> /root/pesan-$port.log; done &)
+done
+EOF
+bash /root/balthasar.sh
+grep -q balthasar.sh /root/.bashrc || echo 'bash /root/balthasar.sh' >> /root/.bashrc
+```
+ 
+#### Magi-Melchior
+ 
+```sh
+cat > /root/melchior.sh <<'EOF'
+#!/bin/bash
+echo "nameserver 8.8.8.8" > /etc/resolv.conf
+if ! command -v nc.traditional > /dev/null 2>&1 || ! command -v iptables > /dev/null 2>&1
+then
+  apt-get update && apt-get install -y iptables netcat-traditional
+fi
+update-alternatives --set nc /bin/nc.traditional 2>/dev/null
+for port in 5000
+do
+  pgrep -f "nc -l -p $port" > /dev/null || (while true; do nc -l -p $port >> /root/pesan-$port.log; done &)
+done
+EOF
+bash /root/melchior.sh
+grep -q melchior.sh /root/.bashrc || echo 'bash /root/melchior.sh' >> /root/.bashrc
+```
+ 
+Pengujian dari Lilith (log dibersihkan dulu dengan `rm -f /root/pesan-*.log` di tiap MAGI):
+ 
+```sh
+echo "halo Casper" | nc -w 3 192.229.4.58 5000
+echo "halo Balthasar 5000" | nc -w 3 192.229.4.59 5000
+echo "halo Balthasar 5001" | nc -w 3 192.229.4.59 5001
+echo "halo Melchior" | nc -w 3 192.229.4.60 5000
+```
+ 
+Pesan yang diterima ditampilkan di tiap MAGI dengan `cat /root/pesan-*.log` dan `ss -ltn`.
+ 
+#### Output
+ 
+![](img/07-casper.png)
+![](img/07-balthasar.png)
+![](img/07-melchior.png)
+<!-- TODO: tambahkan screenshot di Lilith saat menjalankan keempat perintah nc -->
+ 
 ---
-
-## Soal 7
-
+ 
+### Soal 8
+ 
+Soal 8 minta Pen-Pen dan Tokyo3-Core melayani dulu supaya kondisi normalnya terbukti sebelum dilindungi. Koneksi ke port 80 dijawab `Welcome to {hostname}`, koneksi ke port 8080 di Tokyo3-Core dijawab `syifa imutz`, dan port yang tidak dilayani (misalnya 22) harus langsung gagal, bukan menggantung.
+ 
+Jawaban dikirim dengan `echo` yang dipipa ke `nc -l`. Opsi `-q 1` membuat `nc` menutup koneksi sedetik setelah pesan terkirim, dan loop membuatnya hidup lagi untuk koneksi berikutnya. Spasi di akhir pola `pgrep` (`"nc -l -p 80 "`) disengaja supaya tidak ikut cocok dengan listener port 8080.
+ 
+Pen-Pen dan Tokyo3-Core memakai image `debinet` karena butuh `netcat-traditional` dan `iptables`.
+ 
+#### Pen-Pen
+ 
+```sh
+cat > /root/penpen.sh <<'EOF'
+#!/bin/bash
+echo "nameserver 8.8.8.8" > /etc/resolv.conf
+if ! command -v ifup > /dev/null 2>&1 || ! command -v nc.traditional > /dev/null 2>&1 || ! command -v iptables > /dev/null 2>&1
+then
+  apt-get update && apt-get install -y ifupdown iptables netcat-traditional
+fi
+update-alternatives --set nc /bin/nc.traditional 2>/dev/null
+HN=$(hostname)
+pgrep -f "nc -l -p 80 " > /dev/null || (while true; do echo "Welcome to $HN" | nc -l -p 80 -q 1 > /dev/null; done &)
+EOF
+bash /root/penpen.sh
+grep -q 'bash /root/ip.sh' /root/.bashrc || echo 'bash /root/ip.sh' >> /root/.bashrc
+grep -q 'bash /root/penpen.sh' /root/.bashrc || echo 'bash /root/penpen.sh' >> /root/.bashrc
+```
+ 
+#### Tokyo3-Core
+ 
+```sh
+cat > /root/tokyo3core.sh <<'EOF'
+#!/bin/bash
+echo "nameserver 8.8.8.8" > /etc/resolv.conf
+if ! command -v ifup > /dev/null 2>&1 || ! command -v nc.traditional > /dev/null 2>&1 || ! command -v iptables > /dev/null 2>&1
+then
+  apt-get update && apt-get install -y ifupdown iptables netcat-traditional
+fi
+update-alternatives --set nc /bin/nc.traditional 2>/dev/null
+HN=$(hostname)
+pgrep -f "nc -l -p 80 " > /dev/null || (while true; do echo "Welcome to $HN" | nc -l -p 80 -q 1 > /dev/null; done &)
+pgrep -f "nc -l -p 8080 " > /dev/null || (while true; do echo "syifa imutz" | nc -l -p 8080 -q 1 > /dev/null; done &)
+EOF
+bash /root/tokyo3core.sh
+grep -q 'bash /root/ip.sh' /root/.bashrc || echo 'bash /root/ip.sh' >> /root/.bashrc
+grep -q 'bash /root/tokyo3core.sh' /root/.bashrc || echo 'bash /root/tokyo3core.sh' >> /root/.bashrc
+```
+ 
+Pengujian dari Lilith. Karena sebagian `nc` adalah versi busybox yang tidak mencetak pesan error, buktinya memakai exit code dan durasi koneksi:
+ 
+```sh
+buka() {
+  s=$(date +%s)
+  sleep 2 | nc -w 3 $1 $2
+  echo "-> $1:$2 exit=$? durasi=$(( $(date +%s) - s ))s"
+}
+tutup() {
+  s=$(date +%s)
+  nc -w 3 $1 $2 < /dev/null
+  e=$?
+  echo "-> $1:$2 exit=$e durasi=$(( $(date +%s) - s ))s"
+}
+buka 192.229.3.194 80
+buka 192.229.4.106 80
+buka 192.229.4.106 8080
+tutup 192.229.3.194 22
+tutup 192.229.4.106 22
+```
+ 
+Tiga koneksi pertama menampilkan jawaban dengan `exit=0` dan durasi sekitar 2 detik (karena `sleep 2` menahan koneksi tetap terbuka supaya jawaban sempat diterima). Dua koneksi ke port 22 menampilkan `exit=1` dengan `durasi=0s`, artinya langsung ditolak dan tidak menggantung (kalau menggantung, durasinya 3 detik sesuai timeout `-w 3`).
+ 
+#### Output
+ 
+![](img/08-test-lilith.png)
+ 
 ---
-
-## Soal 8
-
+ 
+### Soal 9
+ 
+Soal 9 minta `break_routing.sh` dijalankan di Shigeru tanpa dibaca isinya, lalu semua penyebab ditemukan, diperbaiki, dan gejalanya dijelaskan. Gejalanya, Lilith tidak mendapat jawaban dari Armisael padahal Armisael masih bisa ping gateway-nya sendiri.
+ 
+#### Analisis
+ 
+Diagnosis di Shigeru setelah script dijalankan:
+ 
+```sh
+sysctl net.ipv4.ip_forward
+ip route
+ip rule
+ip route show table 100
+```
+ 
+![](img/09-analisis-shigeru.png)
+ 
+Ditemukan empat penyebab:
+ 
+1. `net.ipv4.ip_forward = 0`, jadi Shigeru berhenti meneruskan paket.
+2. Default route dibelokkan ke Makoto (`default via 192.229.4.146 dev eth1`), bukan ke Gendou.
+3. Ada rute `blackhole 192.229.4.72/29` (subnet Dogma, tempat Lilith), jadi paket menuju Lilith dibuang.
+4. Ada `ip rule` prioritas 90 yang memaksa semua paket yang masuk dari `eth2` (sisi Monolith) memakai tabel 100, dan tabel itu berisi `unreachable default`.
+Kenapa gejalanya begitu: Armisael masih bisa ping gateway-nya (`192.229.4.81`) karena itu paket untuk Shigeru sendiri (delivery lokal), dan tabel `local` (prioritas 0) dicek sebelum aturan prioritas 90. Paket yang harus melewati Shigeru ke tujuan lain terblokir oleh keempat hal di atas, jadi Lilith tidak mendapat jawaban.
+ 
+![](img/09-ping-lilith-gagal.png)
+ 
+#### Perbaikan
+ 
+```sh
+sysctl -w net.ipv4.ip_forward=1
+ip route replace default via 192.229.4.113 dev eth0
+ip route del blackhole 192.229.4.72/29
+ip rule del iif eth2 lookup 100 priority 90
+ip route flush table 100
+```
+ 
+#### Setelah perbaikan
+ 
+![](img/09-shigeru-setelah.png)
+![](img/09-ping-lilith-berhasil.png)
+ 
 ---
-
-## Soal 9
-
----
-
-## Soal 10
-
+ 
+### Soal 10
+ 
+Soal 10 minta `break_nat.sh` dijalankan di Misato dan di Gendou (filenya sama, dijalankan di masing-masing node). Gejalanya, Unit-01, Unit-02, dan Unit-00 di Cage tidak bisa ping `8.8.8.8`, padahal Spy di Intel baik-baik saja dan ping dari Cage ke Lilith normal.
+ 
+#### Analisis
+ 
+Diagnosis dengan `iptables -t nat -S` di Misato dan Gendou:
+ 
+![](img/10-iptables-misato.png)
+![](img/10-iptables-gendou.png)
+ 
+Ditemukan dua penyebab, satu di tiap node:
+ 
+- **Misato:** rule `-A POSTROUTING -s 192.229.4.64/29 ! -d 192.229.0.0/16 -o eth0 -j SNAT --to-source 172.31.99.1`. Sumber traffic Cage yang menuju luar jaringan internal diganti jadi alamat palsu `172.31.99.1`, jadi balasan dari internet tidak bisa kembali.
+- **Gendou:** rule `-A POSTROUTING -s 192.229.4.64/29 -o eth0 -j RETURN` yang berada paling atas di `POSTROUTING`. Traffic Cage ke `eth0` langsung keluar sebelum sempat kena `MASQUERADE`, jadi tetap membawa alamat privat dan tidak bisa dibalas.
+Kenapa Cage terdampak tapi Intel tidak: kedua rule hanya mencocokkan sumber `192.229.4.64/29` (subnet Cage). Spy ada di `192.229.4.100/30`, jadi tidak kena rule rusak dan tetap lewat `MASQUERADE` Gendou yang normal. Ping Cage ke Lilith juga normal karena rule Misato mengecualikan tujuan internal (`! -d 192.229.0.0/16`), dan rule Gendou hanya berlaku untuk paket yang keluar lewat `eth0`.
+ 
+![](img/10-ping-lilith-normal.png)
+![](img/10-ping-unit01-gagal.png)
+ 
+#### Perbaikan
+ 
+Di Misato:
+ 
+```sh
+iptables -t nat -D POSTROUTING -s 192.229.4.64/29 ! -d 192.229.0.0/16 -o eth0 -j SNAT --to-source 172.31.99.1
+```
+ 
+Di Gendou:
+ 
+```sh
+iptables -t nat -D POSTROUTING -s 192.229.4.64/29 -o eth0 -j RETURN
+```
+ 
+#### Setelah perbaikan
+ 
+![](img/10-ping-unit01-berhasil.png)
+ 
+Alamat sumber diterjemahkan hanya di router **Gendou**, lewat rule `MASQUERADE` pada `eth0` yang mengubah sumber `192.229.4.66` (Unit-01) menjadi IP `eth0` dari NAT1. Misato tidak boleh menerjemahkan apa pun.
+ 
 ---
 
 ## Informasi Umum Nomor 11-20
