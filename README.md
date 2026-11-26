@@ -221,7 +221,7 @@ _Gambar 12-01. Casper mem-ping 8.8.8.8 sebelum dirusak (berhasil)._
 ![12-02-casper-apk-update-sebelum](img/12-02-casper-apk-update-sebelum.png)
 _Gambar 12-02. `apk update` di Casper sebelum dirusak (berhasil)._
 
-![12-03-unit00-nc-casper-5000-sebelu](img/12-03-unit00-nc-casper-5000-sebelu.png)
+![12-03-unit00-nc-casper-5000-sebelum](img/12-03-unit00-nc-casper-5000-sebelum.png)
 _Gambar 12-03. Unit-00 menyambung ke Casper TCP 5000 sebelum dirusak (berhasil)._
 
 ![12-04-casper-iptables-sebelum](img/12-04-casper-iptables-sebelum.png)
